@@ -4,7 +4,7 @@ a simple webserver for boot
 ## overview
 this task creates and serves an internal distribution from the fileset's output directories (resources and assets).  the distribution mirrors the contents of the environment's target directory, but is served from jetty's classpath as an exploded war file.
 
-without additional configuration, this task functions as a static webserver useful for client-side development.  to host a service, simply compose it with boot's `(web)` task, which adds the [clojure-servlet-adapter][adapter] shim and a web.xml file to the distribution.
+without additional configuration, this task functions as a static webserver useful for client-side development.  to host a service, simply compose it with boot's [web][web] task, which adds the [clojure-adapter-servlet][srv] shim and a [web.xml][dsc] file to the distribution.
 
 ## use cases
 
@@ -35,3 +35,7 @@ sample task with boot-jetty bootstrapping a spring framework service:
 (deftask develop []
   (comp (watch) (speak) (aot) (javac) (serve)) )
 ```
+
+[web]: https://github.com/boot-clj/boot/blob/master/boot/core/src/boot/task/built_in.clj#L499-L531
+[srv]: https://github.com/tailrecursion/clojure-adapter-servlet
+[dsc]: https://cloud.google.com/appengine/docs/java/config/webxml
