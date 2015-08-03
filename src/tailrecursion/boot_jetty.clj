@@ -7,7 +7,8 @@
 
 (def ^:private deps
   (delay (remove pod/dependency-loaded?
-   '[[org.eclipse.jetty/jetty-servlet "9.3.1.v20150714"]
+   '[[org.clojure/data.xml            "0.0.8"]
+     [org.eclipse.jetty/jetty-servlet "9.3.1.v20150714"]
      [org.eclipse.jetty/jetty-server  "9.3.1.v20150714"]
      [org.eclipse.jetty/jetty-webapp  "9.3.1.v20150714"] ])))
 

@@ -1,6 +1,6 @@
 (ns tailrecursion.boot-jetty.handler
   (:import
-    [java.io                          File InputStream FileInputStream]
+    [java.io                          StringReader File InputStream FileInputStream]
     [javax.servlet                    ServletConfig ServletContext ServletContextEvent ServletException]
     [javax.servlet.http               HttpServletRequest HttpServletResponse]
     [org.eclipse.jetty.server         Request Server]
@@ -9,8 +9,9 @@
     [org.eclipse.jetty.webapp         WebAppContext]
     [org.eclipse.jetty.util.component LifeCycle$Listener] )
   (:require
-    [clojure.java.io :as io]
-    [clojure.string :as string] ))
+    [clojure.data.xml :as xml]
+    [clojure.java.io  :as io]
+    [clojure.string   :as str] ))
 
 ;;; private ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -18,14 +19,18 @@
 (def serve-fn   (atom nil))
 (def destroy-fn (atom nil))
 
-(defn- get-params-map [^ServletConfig config]
-  (into {} (for [param (enumeration-seq (.getInitParameterNames config))
-    :let [value (.getInitParameter config param)]]
-    [(keyword param) value] )))
-
-(defn- get-config-map [^ServletConfig config]
-    {:name        (.getServletName config)
-     :init-params (get-params-map  config) })
+(defn- get-config-map [web-resource]
+  (let [body #(first (:content (some (fn [$] (if (= (:tag $) %2) $)) %)))]
+    (with-open [web (io/input-stream web-resource)]
+      (->> (xml/parse web)
+        (:content)
+        (filter #(= (:tag %) :servlet))
+        (map :content)
+        (some #(if (= (body % :servlet-name) "boot-webapp") %))
+        (filter #(= (:tag %) :init-param))
+        (map :content)
+        (map #(vector (keyword (body % :param-name)) (symbol (body % :param-value))))
+        (into {}) ))))
 
 (defn- get-servlet-fn [fn-name]
   (let [[n s] (map symbol ((juxt namespace name) (symbol fn-name)))]
@@ -51,7 +56,7 @@
         (.toLowerCase name)
         (->> (.getHeaders request name)
              (enumeration-seq)
-             (string/join ",") )))
+             (str/join ",") )))
     {}
     (enumeration-seq (.getHeaderNames request) )))
 
@@ -120,35 +125,43 @@
 
 ;;; handler implementation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def server (atom nil))
-
 (deftype Handler [_]
   org.eclipse.jetty.server.Handler
   (isFailed [_]
     false )
   (isRunning [_]
-    true )
+    false )
   (isStarted [_]
-    true )
+    false )
   (isStarting [_]
-    true )
+    false )
   (isStopped [_]
-    true )
+    false )
   (isStopping [_]
-    true )
+    false )
   (addLifeCycleListener [_ listener]
     (prn :add-called) )
   (removeLifeCycleListener [_ listener]
     (prn :rem-called) )
   (start [_]
-    nil )
+    (when-let [web-rsc (io/resource "WEB-INF/web.xml")]
+      (let [config (get-config-map web-rsc) ]
+        (if-let [n (:create config)]
+          ((get-servlet-fn n) config) )
+        (if-let [n  (:serve config)]
+          (if-let [f (get-servlet-fn n)]
+            (reset! serve-fn f) )
+          (throw (ServletException. "The required serve function could not be found in web.xml.")) )
+        (if-let [n (:destroy config)]
+          (reset! destroy-fn (get-servlet-fn n)))  )))
   (stop [_]
+    (prn :stop)
     nil )
   (destroy [_]
     nil )
   (^void handle [_ ^String target ^Request base-request ^HttpServletRequest request ^HttpServletResponse response]
     (if-let [req (get-request-map request)]
-      (set-response-map response {:status 200 :body "hello world"}) ))
+      (set-response-map response (@serve-fn req)) ))
   (^Server getServer [_]
     @server )
   (^void setServer [_ ^Server server]
