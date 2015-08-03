@@ -1,9 +1,9 @@
 (ns tailrecursion.boot-jetty
   {:boot/export-tasks true}
   (:require
-   [boot.pod  :as pod]
-   [boot.core :as boot]
-   [boot.util :as util] ))
+    [boot.pod  :as pod]
+    [boot.core :as boot]
+    [boot.util :as util] ))
 
 (def ^:private deps
   (delay (remove pod/dependency-loaded?
@@ -17,9 +17,15 @@
   (let [pod-env (-> (boot/get-env) (dissoc :source-paths) (update :dependencies into (vec (seq @deps))))
         pod     (future (pod/make-pod pod-env))
         webapp  (boot/tmp-dir!)
-        serve   (delay (pod/with-call-in @pod (tailrecursion.boot-jetty.impl/serve ~(.getPath webapp) ~port))) ]
-    (util/info "Starting Jetty on port %s...\n" port)
+        create  (delay (pod/with-call-in @pod (tailrecursion.boot-jetty.server/create! ~(.getPath webapp) ~port)))
+        inform #(util/info (str % " Jetty on port %s...\n") port) ]
+    (boot/cleanup
+      (inform "\nStopping")
+      (pod/with-call-in @pod (tailrecursion.boot-jetty.server/destroy!)) )
     (boot/with-pre-wrap fileset
-      (apply boot/sync! webapp (boot/output-dirs fileset))
-      @serve
-     fileset )))
+      (if-not (realized? create)
+        (do (inform "Starting")
+            (deref create) )
+        (do (inform "Restarting")
+            (pod/with-call-in @pod (tailrecursion.boot-jetty.server/refresh!) )))
+      fileset )))
