@@ -1,10 +1,10 @@
 (ns tailrecursion.boot-jetty.server
   (:import
-    [java.io                          StringReader File InputStream FileInputStream]
-    [javax.servlet                    ServletConfig ServletContext ServletContextEvent ServletException]
+    [java.io                          File InputStream FileInputStream]
+    [javax.servlet                    ServletException]
     [javax.servlet.http               HttpServletRequest HttpServletResponse]
     [org.eclipse.jetty.server         Request Server]
-    [org.eclipse.jetty.server.handler AbstractHandler]
+    [org.eclipse.jetty.webapp         WebAppContext]
     [org.eclipse.jetty.util.component LifeCycle$Listener] )
   (:require
     [boot.core        :as boot]
@@ -176,7 +176,8 @@
 (defn create! [env path port]
   (let [pod-env (-> env (assoc :resource-paths #{path}))
         pod-svc (pod/pod-pool pod-env)
-        handler (Handler. pod-svc path) ]
+        default #(doto (WebAppContext.) (.setContextPath "/") (.setResourceBase %))
+        handler (if (io/resource "WEB-INF/web.xml") (Handler. pod-svc path) (default path)) ]
     (reset! server (doto (Server. port) (.setHandler handler) (.start)) )))
 
 (defn refresh! []
