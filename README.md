@@ -25,21 +25,21 @@ sample task with boot-jetty as a clojure dev server:
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (web) (serve :8000)))
+  (comp (watch) (speak) (web) (serve :port 8000)))
 ```
 
 sample task with boot-jetty as a dev server for an angular js application deployed to S3:
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (reload) (js) (less) (serve :8000)))
+  (comp (watch) (speak) (reload) (js) (less) (serve :port 8000)))
 ```
 
 sample task with boot-jetty bootstrapping a spring framework service:
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (aot) (javac) (serve :8000)))
+  (comp (watch) (speak) (aot) (javac) (serve :port 8000)))
 ```
 
 [web]: https://github.com/boot-clj/boot/blob/master/boot/core/src/boot/task/built_in.clj#L499-L531
