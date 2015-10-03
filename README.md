@@ -1,6 +1,12 @@
 # boot-jetty
 a simple webserver for boot
 
+[](dependency)
+```clojure
+[tailrecursion/boot-jetty "0.1.0"] ;; latest release
+```
+[](/dependency)
+
 ## overview
 this task creates and serves an internal distribution from the fileset's output directories (resources and assets).  the distribution mirrors the contents of the environment's target directory, but is served from jetty's classpath as an exploded war file.
 
@@ -12,28 +18,28 @@ sample task with boot-jetty as a dev server for a hoplon application deployed to
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (reload) (cljs-repl) (hoplon) (cljs) (serve)) )
+  (comp (watch) (speak) (reload) (cljs-repl) (hoplon) (cljs) (serve :port 8000)))
 ```
 
 sample task with boot-jetty as a clojure dev server:
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (web) (serve)) )
+  (comp (watch) (speak) (web) (serve :port 8000)))
 ```
 
 sample task with boot-jetty as a dev server for an angular js application deployed to S3:
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (reload) (js) (less) (serve)) )
+  (comp (watch) (speak) (reload) (js) (less) (serve :port 8000)))
 ```
 
 sample task with boot-jetty bootstrapping a spring framework service:
 ```clojure
 
 (deftask develop []
-  (comp (watch) (speak) (aot) (javac) (serve)) )
+  (comp (watch) (speak) (aot) (javac) (serve :port 8000)))
 ```
 
 [web]: https://github.com/boot-clj/boot/blob/master/boot/core/src/boot/task/built_in.clj#L499-L531
