@@ -1,20 +1,33 @@
 (set-env!
   :resource-paths #{"src"}
+  :source-paths   #{"tst"}
   :target-path      "tgt"
-  :dependencies  '[[org.clojure/clojure "1.7.0"     :scope "provided"]
-                   [boot/core           "2.5.1"     :scope "provided"]
-                   [adzerk/bootlaces    "0.1.12"    :scope "test"] ])
+  :dependencies  '[[org.clojure/clojure             "1.7.0"  :scope "provided"]
+                   [boot/core                       "2.3.0"  :scope "provided"]
+                   [adzerk/bootlaces                "0.1.11" :scope "test"]
+                   [adzerk/boot-test                "1.0.4"  :scope "test"]
+                   [javax.servlet/javax.servlet-api "3.1.0"] ]
+ :repositories  [["clojars"       "https://clojars.org/repo/"]
+                 ["maven-central" "https://repo1.maven.org/maven2/"] ])
+(require
+  '[adzerk.bootlaces         :refer :all]
+  '[adzerk.boot-test         :refer [test]]
+  '[tailrecursion.boot-jetty :refer [serve]] )
 
- (require '[adzerk.bootlaces :refer :all])
+(def +version+ "0.1.0-SNAPSHOT")
 
- (def +version+ "0.1.0")
+(bootlaces! +version+)
 
- (bootlaces! +version+)
+(deftask develop []
+  (comp (wait) (speak) (web) (serve) (test)) )
 
- (task-options!
+(task-options!
   pom  {:project     'tailrecursion/boot-jetty
         :version     +version+
         :description "Boot jetty server."
         :url         "https://github.com/tailrecursion/boot-jetty"
         :scm         {:url "https://github.com/tailrecursion/boot-jetty"}
-        :license     {"EPL" "http://www.eclipse.org/legal/epl-v10.html"} })
+        :license     {"EPL" "http://www.eclipse.org/legal/epl-v10.html"} }
+  serve {:port       3005}
+  test  {:namespaces #{'tailrecursion.boot-jetty-test}}
+  web   {:serve      'tailrecursion.boot-jetty-app/serve} )
