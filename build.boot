@@ -6,6 +6,8 @@
                    [boot/core                       "2.3.0"  :scope "provided"]
                    [adzerk/bootlaces                "0.1.11" :scope "test"]
                    [adzerk/boot-test                "1.0.4"  :scope "test"]
+                   [clj-http                        "2.0.0"  :scope "test"]
+                   [ring/ring-mock                  "0.3.0"  :scope "test"]
                    [javax.servlet/javax.servlet-api "3.1.0"] ]
  :repositories  [["clojars"       "https://clojars.org/repo/"]
                  ["maven-central" "https://repo1.maven.org/maven2/"] ])
@@ -18,8 +20,14 @@
 
 (bootlaces! +version+)
 
+(replace-task!
+  [t test] (fn [& xs] (comp (web) (serve) (apply t xs))) )
+
+(deftask build []
+  (comp (test) (build-jar)) )
+
 (deftask develop []
-  (comp (wait) (speak) (web) (serve) (test)) )
+  (comp (watch) (speak) (web) (serve) (test)) )
 
 (task-options!
   pom  {:project     'tailrecursion/boot-jetty

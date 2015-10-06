@@ -1,37 +1,21 @@
 (ns tailrecursion.boot-jetty-test
   (:require
-    [org.httpkit.client :as http]
-    [clojure.test :refer :all] ))
-
-;;; private ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-#_(def request
-  (let [body (proxy [javax.servlet.ServletInputStream]   [])
-        cert (proxy [java.security.cert.X509Certificate] []) ]
-    {:server-port         8080
-     :server-name         "foobar"
-     :remote-addr         "127.0.0.1"
-     :uri                 "/foo"
-     :query-string        "a=b"
-     :scheme              :http
-     :request-method       :get
-     :headers              {"X-Client" ["Foo", "Bar"], "X-Server" ["Baz"]}
-     :content-type         "text/plain"
-     :content-length       10
-     :character-encoding   "UTF-8"
-     :servlet-context-path "/foo"
-     :ssl-client-cert      cert
-     :body                 body }))
+    [clj-http.client   :as http]
+    [ring.mock.request :as mock]
+    [clojure.test   :refer :all] ))
 
 (def uri "http://localhost:3005/")
 
 ;;; tests ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#_(post (str uri "" (name symbol)) {:form-params map :insecure? true})
-
 (deftest test-get
-  (let [res @(http/get uri)]
-    (prn :res res)
-    #_(is (= 200 (res :status)))
-    #_(is (= (get-in res [:headers "content-type"]) "text/plain"))
-    #_(is (= (res :body) "Boot Jetty")) ))
+  (let [res (http/request (mock/request :get uri))]
+    (is (= 200 (res :status)))
+    (is (= (get-in res [:headers :content-type]) "text/plain;charset=iso-8859-1"))
+    (is (= (res :body) "Boot Jetty")) ))
+
+(deftest test-post
+  (let [res (http/request (update (mock/request :post uri {:foo "bar" :baz "brf"}) :headers dissoc "content-length"))]
+    (is (= 200 (res :status)))
+    (is (= (get-in res [:headers :content-type]) "text/plain;charset=iso-8859-1"))
+    (is (= (res :body) "Boot Jetty")) ))

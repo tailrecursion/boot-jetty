@@ -1,9 +1,9 @@
-# boot-jetty
+# boot-jetty [![Build Status][1]][2]
 a simple webserver for boot
 
 [](dependency)
 ```clojure
-[tailrecursion/boot-jetty "0.1.0"] ;; latest release
+[tailrecursion/boot-jetty "0.1.0-SNAPSHOT"] ;; latest release
 ```
 [](/dependency)
 
@@ -41,7 +41,15 @@ sample task with boot-jetty bootstrapping a spring framework service:
 (deftask develop []
   (comp (watch) (speak) (aot) (javac) (serve :port 8000)))
 ```
-
+[1]: https://travis-ci.org/tailrecursion/boot-jetty.png?branch=app-pod
+[2]: https://travis-ci.org/tailrecursion/boot-jetty
 [web]: https://github.com/boot-clj/boot/blob/master/boot/core/src/boot/task/built_in.clj#L499-L531
 [srv]: https://github.com/tailrecursion/clojure-adapter-servlet
 [dsc]: https://cloud.google.com/appengine/docs/java/config/webxml
+
+## development
+
+to enhance boot-jetty while using a test driven development workflow, from the project root, type:
+```bash
+boot develop
+``

@@ -27,7 +27,7 @@
           (boot.pod/eval-fn-call [destroy-fn]) )))))
 
 (boot/deftask serve
-  "Serve the application, reloading all namspaces with each subsequent invocation."
+  "Serve the application, refreshing the application with each subsequent invocation."
   [p port PORT int "The port the server will bind to."
    c conf PATH str "The path to the web.xml file" ]
   (let [app-dir (boot/tmp-dir!)
