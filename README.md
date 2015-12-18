@@ -57,7 +57,7 @@ these init parameters:
 
 ```clojure
 (deftask develop []
-  (comp ... (serve :init-params {"useFileMappedBuffer" "false"})))
+  (comp ... (serve :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
 ```
 
 [web]: https://github.com/boot-clj/boot/blob/master/boot/core/src/boot/task/built_in.clj#L499-L531
