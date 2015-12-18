@@ -1,12 +1,12 @@
 (set-env!
   :resource-paths #{"src"}
   :target-path      "tgt"
-  :dependencies  '[[org.clojure/clojure "1.7.0"     :scope "provided"]
-                   [adzerk/bootlaces    "0.1.12"    :scope "test"] ])
+  :dependencies  '[[org.clojure/clojure "1.7.0"  :scope "provided"]
+                   [adzerk/bootlaces    "0.1.13" :scope "test"] ])
 
  (require '[adzerk.bootlaces :refer :all])
 
- (def +version+ "0.1.2")
+ (def +version+ "0.1.3")
 
  (bootlaces! +version+)
 
