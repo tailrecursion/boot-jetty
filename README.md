@@ -3,7 +3,7 @@ a simple webserver for boot
 
 [](dependency)
 ```clojure
-[tailrecursion/boot-jetty "0.1.0-SNAPSHOT"] ;; latest release
+[tailrecursion/boot-jetty "0.2.0-app-pod-SNAPSHOT"] ;; latest release
 ```
 [](/dependency)
 

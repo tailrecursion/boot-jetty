@@ -8,7 +8,7 @@
 (def ^:private srv-deps
   (delay (remove pod/dependency-loaded?
    '[[org.clojure/data.xml           "0.0.8"]
-     [org.eclipse.jetty/jetty-server "9.3.4.RC0"]
+     [org.eclipse.jetty/jetty-server "9.3.7.v20160115"]
      [ring/ring-servlet              "1.4.0"] ])))
 
 (defn shim [pod]
