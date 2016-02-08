@@ -16,7 +16,7 @@
   '[adzerk.boot-test         :refer [test]]
   '[tailrecursion.boot-jetty :refer [serve]] )
 
-(def +version+ "0.1.0-SNAPSHOT")
+(def +version+ "0.2.0-app-pod-SNAPSHOT")
 
 (bootlaces! +version+)
 

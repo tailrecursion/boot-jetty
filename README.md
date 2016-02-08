@@ -52,4 +52,4 @@ sample task with boot-jetty bootstrapping a spring framework service:
 to enhance boot-jetty while using a test driven development workflow, from the project root, type:
 ```bash
 boot develop
-``
+```
